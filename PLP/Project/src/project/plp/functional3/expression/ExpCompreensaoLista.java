@@ -1,6 +1,5 @@
 package project.plp.functional3.expression;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -48,7 +47,7 @@ public class ExpCompreensaoLista implements Expressao {
 			throws VariavelNaoDeclaradaException, VariavelJaDeclaradaException {
 		ValorLista result = ValorLista.getInstancia(null, null);
 
-		gerador.gerarValores(amb, result, expressao, filtro);
+		gerador.gerarValores(amb, result, this.expressao, this.filtro);
 
 		return result.inverter();
 	}
@@ -58,21 +57,19 @@ public class ExpCompreensaoLista implements Expressao {
 		if (!temGerador())
 			return false;
 
-		boolean retorno = gerador.checaTipo(amb);
-
 		amb.incrementa();
-
-		mapTypeBindings(amb);
-
-		retorno &= expressao.checaTipo(amb);
-		retorno &= filtroChecaTipo(amb);
-
-		amb.restaura();
-
-		return retorno;
+		try {
+			if (!gerador.checaTipo(amb)) {
+				return false;
+			}
+			mapTypeBindings(amb);
+			return expressao.checaTipo(amb) && filtroChecaTipo(amb);
+		} finally {
+			amb.restaura();
+		}
 	}
 
-	private void mapTypeBindings(AmbienteCompilacao amb) {
+	private void mapTypeBindings(AmbienteCompilacao amb) throws VariavelJaDeclaradaException {
 		Map<Id, Tipo> typeBindings = gerador.checkTypeBindings(amb);
 		Set<Entry<Id, Tipo>> entrySet = typeBindings.entrySet();
 		for (Entry<Id, Tipo> entry : entrySet) {
@@ -93,14 +90,12 @@ public class ExpCompreensaoLista implements Expressao {
 			throws VariavelNaoDeclaradaException, VariavelJaDeclaradaException {
 
 		amb.incrementa();
-
-		mapTypeBindings(amb);
-
-		TipoLista retorno = new TipoLista(expressao.getTipo(amb));
-
-		amb.restaura();
-
-		return retorno;
+		try {
+			mapTypeBindings(amb);
+			return new TipoLista(expressao.getTipo(amb));
+		} finally {
+			amb.restaura();
+		}
 	}
 	
 	public ExpCompreensaoLista clone() {
@@ -108,41 +103,36 @@ public class ExpCompreensaoLista implements Expressao {
 		if (this.filtro != null) {
 			retorno.setFiltro(this.filtro.clone());
 		} 
-		
-		List<Gerador> listaGer = new ArrayList<Gerador>();
-		
-		Gerador ger = this.gerador;
-		if (ger != null) {
-			listaGer.add(ger);
-			while(ger.temProximoGerador()) {
-				ger = ger.getProximoGerador();
-				listaGer.add(ger);
-			}
+
+		if (this.gerador != null) {
+			retorno.gerador = this.gerador.clone();
 		}
-		
-		retorno.setGeradores(listaGer);
 		
 		return retorno;
 	}
 
 	public Expressao reduzir(AmbienteExecucao ambiente) {
-		ambiente.incrementa();
-		
-		Gerador ger = this.gerador;
-		while(ger.temProximoGerador()){
-			ger.reduzir(ambiente);
-			
-			ger = ger.getProximoGerador();
-		}
-		
-		this.expressao = this.expressao.reduzir(ambiente);
-		if (this.filtro != null) {
-			this.filtro = this.filtro.reduzir(ambiente);
-		}
-		
-		ambiente.restaura();
-		
+		reduzirGeradores(this.gerador, ambiente);
 		return this;
+	}
+
+	private void reduzirGeradores(Gerador gerador, AmbienteExecucao ambiente) {
+		if (gerador == null) {
+			// Todos os padroes ainda estao em escopo ao reduzir o resultado.
+			this.expressao = this.expressao.reduzir(ambiente);
+			if (this.filtro != null) {
+				this.filtro = this.filtro.reduzir(ambiente);
+			}
+			return;
+		}
+
+		ambiente.incrementa();
+		try {
+			gerador.reduzir(ambiente);
+			reduzirGeradores(gerador.getProximoGerador(), ambiente);
+		} finally {
+			ambiente.restaura();
+		}
 	}
 	
 	public String toString() {

@@ -12,16 +12,16 @@
 - [x] 2.3 Desestruturar quando o tipo ainda não é conhecido (parâmetro de
       função, retorno de chamada recursiva)
 
+### Fase 3: Padrões em compreensões de lista
+- [x] 3.1 `[x + y for (x, y) in lista]`
+
 ## Pendente
 
-### Fase 3: Padrões em parâmetros de função
-- [ ] 3.1 Função recebendo tupla desestruturada direto no parâmetro:
+### Fase 4: Padrões em parâmetros de função
+- [ ] 4.1 Função recebendo tupla desestruturada direto no parâmetro:
       `fun f (x, y) = x + y`
-- [ ] 3.2 A mesma função polimórfica funcionando com tuplas de tipos
+- [ ] 4.2 A mesma função polimórfica funcionando com tuplas de tipos
       diferentes em chamadas distintas
-
-### Fase 4: Padrões em compreensões de lista
-- [ ] 4.1 `[x + y for (x, y) in lista]`
 
 ### Fase 5: Aceitação final
 - [ ] 5.1 Rodar todos os casos de teste do README de ponta a ponta

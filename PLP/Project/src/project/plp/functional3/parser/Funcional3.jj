@@ -756,13 +756,13 @@ Expressao PExpCompreensaoLista() :
 
 Gerador PGerador() :
 {
-  Id id = null;
-  Expressao expressao = null;
+  Padrao padrao;
+  Expressao expressao;
 }
 {
-  < FOR > id = PId() < IN > expressao = PExpressao() (< COMMA >)?
+  < FOR > padrao = PPadrao() < IN > expressao = PExpressao() (< COMMA >)?
   {
-    return new Gerador(id, expressao);
+    return new Gerador(padrao, expressao);
   }
 }
 
