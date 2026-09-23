@@ -28,6 +28,7 @@ import li1.plp.expressions2.expression.*;
 import plp.debug.core.InfoEscopo;
 import plp.debug.core.TrechoCodigoFonte;
 import plp.debug.imperativa1.ComandoDeclaracaoDebug;
+import li1.plp.imperative1.command.IO;
 import li1.plp.imperative1.command.*;
 import li1.plp.imperative1.declaration.*;
 import li1.plp.imperative1.memory.*;

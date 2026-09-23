@@ -31,6 +31,7 @@ import plp.debug.core.TrechoCodigoFonte;
 import plp.debug.imperativa2.ComandoDeclaracaoDebug;
 import plp.debug.imperativa2.DeclaracaoProcedimentoDebug;
 import plp.debug.imperativa2.DefProcedimentoDebug;
+import li2.plp.imperative1.command.IO;
 import li2.plp.imperative1.command.*;
 import li2.plp.imperative1.declaration.*;
 import li2.plp.imperative1.memory.*;

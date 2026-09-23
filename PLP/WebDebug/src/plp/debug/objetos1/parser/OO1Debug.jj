@@ -33,6 +33,7 @@ import loo1.plp.orientadaObjetos1.expressao.leftExpression.*;
 import loo1.plp.orientadaObjetos1.expressao.binaria.*;
 import loo1.plp.orientadaObjetos1.expressao.unaria.*;
 import loo1.plp.orientadaObjetos1.expressao.valor.*;
+import loo1.plp.orientadaObjetos1.comando.IO;
 import loo1.plp.orientadaObjetos1.comando.*;
 import loo1.plp.orientadaObjetos1.declaracao.classe.*;
 import loo1.plp.orientadaObjetos1.declaracao.variavel.*;
