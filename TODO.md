@@ -27,6 +27,6 @@
 - [ ] 5.1 Rodar todos os casos de teste do README de ponta a ponta
 
 ## Notas rápidas
-- Rodar os testes: `cd PLP && mvn -pl Funcional3 -am test` (55 ok até agora)
+- Rodar os testes: `cd PLP && mvn -f Project/pom.xml test` (55 ok até agora)
 - Tem uma segunda cópia da gramática pro WebDebug (IDE web) que precisa ser
   atualizada à mão sempre que mexemos no parser

@@ -15,6 +15,11 @@
 
   <dependencies>
     <dependency>
+      <groupId>Project</groupId>
+      <artifactId>Project</artifactId>
+      <version>${revision}</version>
+    </dependency>
+    <dependency>
       <groupId>Expressoes1</groupId>
       <artifactId>Expressoes1</artifactId>
       <version>${revision}</version>

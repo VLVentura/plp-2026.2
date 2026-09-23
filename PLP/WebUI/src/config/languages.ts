@@ -9,6 +9,10 @@ export interface NotebookLanguage extends Language {
   scopeMode: "notebook" | "cell";
 }
 
+export function getDefaultLanguage(languages: NotebookLanguage[]): NotebookLanguage {
+  return languages.find((language) => language.name === "Project") ?? languages[0];
+}
+
 function defineLanguage(name: string, scopeMode: "notebook" | "cell", bnf: BNFLanguageDefinition): NotebookLanguage {
   return {
     name,
@@ -76,6 +80,11 @@ export const AVAILABLE_LANGUAGES: NotebookLanguage[] = [
     literals: ["true", "false"],
   }),
   defineLanguage("Func3", "cell", {
+    keywords: ["not", "length", "and", "or", "let", "var", "in", "fun", "fn", "if", "then", "else", "for"],
+    literals: ["true", "false"],
+    builtins: ["head", "tail"],
+  }),
+  defineLanguage("Project", "cell", {
     keywords: ["not", "length", "and", "or", "let", "var", "in", "fun", "fn", "if", "then", "else", "for"],
     literals: ["true", "false"],
     builtins: ["head", "tail"],

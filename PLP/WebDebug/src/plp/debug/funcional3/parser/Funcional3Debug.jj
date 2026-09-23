@@ -31,7 +31,6 @@ import java.util.List;
 import lf3.plp.functional3.*;
 import lf3.plp.functional3.expression.*;
 import lf3.plp.functional3.declaration.DecComposta;
-import lf3.plp.functional3.desestruturacao.*;
 //Imports da Funcional2
 import lf3.plp.functional2.declaration.DecFuncao;
 import lf3.plp.functional2.expression.ValorFuncao;
@@ -141,11 +140,6 @@ public class Func3DebugParser
         ValorLista valLista = (ValorLista) val;
         System.out.println("Funcional 3 PLP Parser Version 0.0.1: resultado = " + valLista.valor());
       }
-      else if (val instanceof ValorTupla)
-      {
-        ValorTupla valTupla = (ValorTupla) val;
-        System.out.println("Funcional 3 PLP Parser Version 0.0.1: resultado = " + valTupla);
-      }
     }
     catch (Exception e)
     {
@@ -216,7 +210,6 @@ TOKEN : /* TOKENS DE FUNCIONAL 3 */
 | < HEAD : "head" >
 | < TAIL : "tail" >
 | < FOR : "for" >
-| < WILDCARD : "_" >
 }
 
 TOKEN : /* LITERALS */
@@ -502,8 +495,6 @@ Expressao PExpLength() :
 Expressao PExpPrimaria() :
 {
   Expressao retorno;
-  Expressao componente;
-  List componentes = null;
 }
 {
   (
@@ -511,26 +502,7 @@ Expressao PExpPrimaria() :
   | LOOKAHEAD(PId() < LPAREN >)
     retorno = PAplicacao()
   | retorno = PId()
-  |
-    < LPAREN > retorno = PExpressao()
-    (
-      < COMMA > componente = PExpressao()
-      {
-        if (componentes == null)
-        {
-          componentes = new ArrayList();
-          componentes.add(retorno);
-        }
-        componentes.add(componente);
-      }
-    )*
-    < RPAREN >
-    {
-      if (componentes != null)
-      {
-        retorno = new ExpTupla(componentes);
-      }
-    }
+  | < LPAREN > retorno = PExpressao() < RPAREN >
   )
   {
     return retorno;
@@ -574,56 +546,18 @@ List PListaId() :
   }
 }
 
-Padrao PPadrao() :
-{
-  Padrao primeiro;
-  Padrao componente;
-  List componentes;
-  Id id;
-}
-{
-  (
-    < WILDCARD >
-    {
-      return new PadraoWildcard();
-    }
-  |
-    id = PId()
-    {
-      return new PadraoId(id);
-    }
-  |
-    < LPAREN > primeiro = PPadrao() < COMMA > componente = PPadrao()
-    {
-      componentes = new ArrayList();
-      componentes.add(primeiro);
-      componentes.add(componente);
-    }
-    (
-      < COMMA > componente = PPadrao()
-      {
-        componentes.add(componente);
-      }
-    )*
-    < RPAREN >
-    {
-      return new PadraoTupla(componentes);
-    }
-  )
-}
-
 DeclaracaoFuncional PDeclVar() :
 {
-  Padrao padrao;
+  Id id;
   Expressao expressao;
   DeclaracaoFuncional retorno;
 }
 {
   (
-    < VAR > padrao = PPadrao() < ASSIGN > expressao = PExpressao()
+    < VAR > id = PId() < ASSIGN > expressao = PExpressao()
   )
   {
-    return new DecVariavel(padrao, expressao);
+    return new DecVariavel(id, expressao);
   }
 }
 

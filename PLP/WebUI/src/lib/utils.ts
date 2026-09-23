@@ -43,6 +43,7 @@ export function languageToHljs(def: Language): LanguageFn {
 
 export const languageToShortName = (language: Language) => {
   const name = language.name;
+  if (name === "Project") return "PRJ";
   return `L${name[0]}${name[name.length - 1]}`;
 };
 
@@ -53,6 +54,7 @@ export const languageToStyles = (language: Language) => {
     func1: "bg-cyan-400 text-white",
     func2: "bg-blue-600 text-white",
     func3: "bg-red-600 text-white",
+    project: "bg-orange-600 text-white",
     imp1: "bg-pink-600 text-white",
     imp2: "bg-amber-600 text-white",
     oo1: "bg-purple-600 text-white",

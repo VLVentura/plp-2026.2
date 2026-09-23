@@ -32,6 +32,7 @@ public final class PlpWebApi {
   public static final int IMP2  = 6;
   public static final int OO1   = 7;
   public static final int OO2   = 8;
+  public static final int PROJECT = 9;
 
   private String output;
   private String message;
@@ -46,6 +47,7 @@ public final class PlpWebApi {
   private static plp.debug.funcional1.parser.Func1DebugParser func1DebugParser;
   private static plp.debug.funcional2.parser.Func2DebugParser func2DebugParser;
   private static plp.debug.funcional3.parser.Func3DebugParser func3DebugParser;
+  private static plp.debug.project.parser.ProjectDebugParser projectDebugParser;
 
   @JSExport
   public static PlpResult __runCode(String language, String sourceCode, String input) {
@@ -66,6 +68,7 @@ public final class PlpWebApi {
         case FUNC1: interpretarFunc1(fis, src);              break;
         case FUNC2: interpretarFunc2(fis, src);              break;
         case FUNC3: interpretarFunc3(fis, src);              break;
+        case PROJECT: interpretarProject(fis);              break;
         case IMP1:  interpretarImp1(fis, listaEntrada, src); break;
         case IMP2:  interpretarImp2(fis, listaEntrada, src); break;
         case OO1:   interpretarOO1(fis, listaEntrada, src);  break;
@@ -88,6 +91,7 @@ public final class PlpWebApi {
       case "func1": return FUNC1;
       case "func2": return FUNC2;
       case "func3": return FUNC3;
+      case "project": return PROJECT;
       case "imp1":  return IMP1;
       case "imp2":  return IMP2;
       case "oo1":   return OO1;
@@ -162,6 +166,21 @@ public final class PlpWebApi {
         new plp.debug.funcional3.AmbienteCompilacaoDebug(new lf3.plp.expressions2.memory.ContextoCompilacao());
     if (prog.getExpressao().checaTipo(ambienteDebug)) {
       compilationEnv = compilationEnvJson("func3", ambienteDebug.getRecorder().getSnapshot());
+      output = prog.executar().toString();
+    } else {
+      throw new RuntimeException("erro de tipos!");
+    }
+  }
+
+  private void interpretarProject(InputStream fis) throws Exception {
+    if (projectDebugParser == null) projectDebugParser = new plp.debug.project.parser.ProjectDebugParser(fis);
+    else plp.debug.project.parser.ProjectDebugParser.ReInit(fis);
+    project.plp.functional3.Programa prog = plp.debug.project.parser.ProjectDebugParser.Input();
+    message = "sintaxe verificada com sucesso!";
+    plp.debug.project.AmbienteCompilacaoDebug ambienteDebug =
+        new plp.debug.project.AmbienteCompilacaoDebug(new project.plp.expressions2.memory.ContextoCompilacao());
+    if (prog.getExpressao().checaTipo(ambienteDebug)) {
+      compilationEnv = compilationEnvJson("project", ambienteDebug.getRecorder().getSnapshot());
       output = prog.executar().toString();
     } else {
       throw new RuntimeException("erro de tipos!");

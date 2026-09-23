@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-import type { NotebookLanguage } from "../config/languages";
+import { getDefaultLanguage, type NotebookLanguage } from "../config/languages";
 import { CodeCell } from "../models/cell/CodeCell";
 import { MarkdownCell } from "../models/cell/MarkdownCell";
 import { Notebook } from "../models/notebook/Notebook";
@@ -67,7 +67,7 @@ export function createWorkspaceStore(
 	initialWorkspace: Workspace,
 	availableLanguages: NotebookLanguage[],
 ) {
-	const defaultLanguage = availableLanguages[0];
+	const defaultLanguage = getDefaultLanguage(availableLanguages);
 
 	return create<WorkspaceStore>()((set, get) => ({
 		workspace: initialWorkspace,
