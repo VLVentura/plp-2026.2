@@ -1,4 +1,4 @@
-package project.plp.functional3.expression;
+package project.plp.project.expression;
 
 import static project.plp.expressions1.util.ToStringProvider.listToString;
 
@@ -11,7 +11,7 @@ import project.plp.expressions2.expression.ValorConcreto;
 import project.plp.expressions2.memory.AmbienteCompilacao;
 import project.plp.expressions2.memory.VariavelJaDeclaradaException;
 import project.plp.expressions2.memory.VariavelNaoDeclaradaException;
-import project.plp.functional3.util.TipoTupla;
+import project.plp.project.util.TipoTupla;
 
 /**
  * Valor de uma tupla ja avaliada, imutavel, com pelo menos duas posicoes.

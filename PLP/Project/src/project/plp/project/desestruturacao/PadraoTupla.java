@@ -1,4 +1,4 @@
-package project.plp.functional3.desestruturacao;
+package project.plp.project.desestruturacao;
 
 import static project.plp.expressions1.util.ToStringProvider.listToString;
 
@@ -12,8 +12,8 @@ import project.plp.expressions2.memory.AmbienteCompilacao;
 import project.plp.expressions2.memory.AmbienteExecucao;
 import project.plp.expressions2.memory.VariavelJaDeclaradaException;
 import project.plp.functional1.util.TipoPolimorfico;
-import project.plp.functional3.expression.ValorTupla;
-import project.plp.functional3.util.TipoTupla;
+import project.plp.project.expression.ValorTupla;
+import project.plp.project.util.TipoTupla;
 
 /**
  * Um padrao de tupla, com pelo menos duas posicoes, cada uma outro padrao.

@@ -1,4 +1,4 @@
-package project.plp.functional3.expression;
+package project.plp.project.expression;
 
 import static project.plp.functional3.ExecutorLF3.parse;
 import static project.plp.functional3.ExecutorLF3.resultado;

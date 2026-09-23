@@ -1,4 +1,4 @@
-package project.plp.functional3.util;
+package project.plp.project.util;
 
 import static project.plp.expressions1.util.ToStringProvider.listToString;
 

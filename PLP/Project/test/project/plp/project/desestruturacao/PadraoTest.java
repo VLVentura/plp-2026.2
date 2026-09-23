@@ -1,4 +1,4 @@
-package project.plp.functional3.desestruturacao;
+package project.plp.project.desestruturacao;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -13,7 +13,7 @@ import project.plp.expressions1.util.Tipo;
 import project.plp.expressions1.util.TipoPrimitivo;
 import project.plp.expressions2.expression.Id;
 import project.plp.expressions2.memory.ContextoCompilacao;
-import project.plp.functional3.util.TipoTupla;
+import project.plp.project.util.TipoTupla;
 
 public class PadraoTest {
 

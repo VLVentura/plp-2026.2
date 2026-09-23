@@ -1,4 +1,4 @@
-package project.plp.functional3.desestruturacao;
+package project.plp.project.desestruturacao;
 
 import static project.plp.functional3.ExecutorLF3.resultado;
 import static project.plp.functional3.ExecutorLF3.tipo;

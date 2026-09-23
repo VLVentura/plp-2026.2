@@ -10,9 +10,9 @@ import project.plp.expressions2.memory.AmbienteCompilacao;
 import project.plp.expressions2.memory.AmbienteExecucao;
 import project.plp.expressions2.memory.VariavelJaDeclaradaException;
 import project.plp.expressions2.memory.VariavelNaoDeclaradaException;
-import project.plp.functional3.desestruturacao.DesestruturacaoException;
-import project.plp.functional3.desestruturacao.Padrao;
-import project.plp.functional3.desestruturacao.PadraoId;
+import project.plp.project.desestruturacao.DesestruturacaoException;
+import project.plp.project.desestruturacao.Padrao;
+import project.plp.project.desestruturacao.PadraoId;
 
 public class DecVariavel implements DeclaracaoFuncional {
 	private Padrao padrao;

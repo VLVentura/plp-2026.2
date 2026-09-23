@@ -1,4 +1,4 @@
-package project.plp.functional3.desestruturacao;
+package project.plp.project.desestruturacao;
 
 import java.util.List;
 

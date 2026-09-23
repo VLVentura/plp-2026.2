@@ -30,8 +30,10 @@ import java.util.List;
 //Imports da Funcional3
 import project.plp.functional3.*;
 import project.plp.functional3.expression.*;
+import project.plp.project.expression.ExpTupla;
+import project.plp.project.expression.ValorTupla;
 import project.plp.functional3.declaration.DecComposta;
-import project.plp.functional3.desestruturacao.*;
+import project.plp.project.desestruturacao.*;
 //Imports da Funcional2
 import project.plp.functional2.declaration.DecFuncao;
 import project.plp.functional2.expression.ValorFuncao;

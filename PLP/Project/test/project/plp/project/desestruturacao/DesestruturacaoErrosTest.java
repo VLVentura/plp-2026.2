@@ -1,4 +1,4 @@
-package project.plp.functional3.desestruturacao;
+package project.plp.project.desestruturacao;
 
 import static project.plp.functional3.ExecutorLF3.parse;
 import static project.plp.functional3.ExecutorLF3.resultado;
@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 
 import project.plp.expressions2.memory.VariavelJaDeclaradaException;
-import project.plp.functional3.desestruturacao.DesestruturacaoException.Motivo;
+import project.plp.project.desestruturacao.DesestruturacaoException.Motivo;
 import project.plp.functional3.parser.ParseException;
 
 public class DesestruturacaoErrosTest {

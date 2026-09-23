@@ -1,4 +1,4 @@
-package project.plp.functional3.util;
+package project.plp.project.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import project.plp.expressions1.util.Tipo;
 import project.plp.expressions1.util.TipoPrimitivo;
 import project.plp.functional1.util.TipoPolimorfico;
+import project.plp.functional3.util.TipoLista;
 
 public class TipoTuplaTest {
 
