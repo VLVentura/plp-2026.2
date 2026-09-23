@@ -1,47 +1,57 @@
 package lf3.plp.functional1.declaration;
 
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 import lf3.plp.expressions1.util.Tipo;
 import lf3.plp.expressions2.expression.Expressao;
 import lf3.plp.expressions2.expression.Id;
-import lf3.plp.expressions2.expression.Valor;
 import lf3.plp.expressions2.memory.AmbienteCompilacao;
 import lf3.plp.expressions2.memory.AmbienteExecucao;
 import lf3.plp.expressions2.memory.VariavelJaDeclaradaException;
 import lf3.plp.expressions2.memory.VariavelNaoDeclaradaException;
-import lf3.plp.functional2.expression.ValorFuncao;
+import lf3.plp.functional3.desestruturacao.DesestruturacaoException;
+import lf3.plp.functional3.desestruturacao.Padrao;
+import lf3.plp.functional3.desestruturacao.PadraoId;
 
 public class DecVariavel implements DeclaracaoFuncional {
-	private Id id;
+	private Padrao padrao;
 	private Expressao expressao;
 
-	public DecVariavel(Id idArg, Expressao expressaoArg) {
-		id = idArg;
+	public DecVariavel(Padrao padraoArg, Expressao expressaoArg) {
+		padrao = padraoArg;
 		expressao = expressaoArg;
+	}
+
+	public DecVariavel(Id idArg, Expressao expressaoArg) {
+		this(new PadraoId(idArg), expressaoArg);
 	}
 
 	/**
 	 * Retorna uma representacao String desta expressao. Util para depuracao.
-	 * 
+	 *
 	 * @return uma representacao String desta expressao.
 	 */
 	@Override
 	public String toString() {
-		return String.format("var %s = %s", id, expressao);
+		return String.format("var %s = %s", padrao, expressao);
 	}
 
 	public Expressao getExpressao() {
 		return expressao;
 	}
 
+	public Padrao getPadrao() {
+		return padrao;
+	}
+
 	public Id getId() {
-		return id;
+		return ((PadraoId) padrao).getId();
 	}
 
 	/**
 	 * Retorna os tipos possiveis desta declara��o.
-	 * 
+	 *
 	 * @param amb
 	 *            o ambiente que contem o mapeamento entre identificadores e
 	 *            tipos.
@@ -61,7 +71,7 @@ public class DecVariavel implements DeclaracaoFuncional {
 
 	/**
 	 * Realiza a verificacao de tipos desta declara��o.
-	 * 
+	 *
 	 * @param amb
 	 *            o ambiente de compila��o.
 	 * @return <code>true</code> se os tipos da expressao sao validos;
@@ -74,35 +84,47 @@ public class DecVariavel implements DeclaracaoFuncional {
 	 */
 	public boolean checaTipo(AmbienteCompilacao ambiente)
 			throws VariavelNaoDeclaradaException, VariavelJaDeclaradaException {
+		checaDuplicidade();
 		return expressao.checaTipo(ambiente);
 	}
 
+	private void checaDuplicidade() {
+		Set<Id> vistos = new HashSet<Id>();
+		for (Id id : padrao.getIdsLigados()) {
+			if (!vistos.add(id)) {
+				throw DesestruturacaoException.duplicidade(id);
+			}
+		}
+	}
 
 	public void elabora(AmbienteExecucao amb, AmbienteExecucao aux) throws VariavelJaDeclaradaException {
-		aux.map(getId(), getExpressao().avaliar(amb));
+		padrao.bind(getExpressao().avaliar(amb), aux);
 	}
-
 
 	public void elabora(AmbienteCompilacao amb, AmbienteCompilacao aux) throws VariavelJaDeclaradaException {
-		aux.map(getId(), getTipo(amb));
+		padrao.bindTipo(getTipo(amb), aux);
 	}
-
 
 	public void incluir(AmbienteExecucao amb, AmbienteExecucao aux) throws VariavelJaDeclaradaException {
-		amb.map(getId(), aux.get(getId()));
+		for (Id id : padrao.getIdsLigados()) {
+			amb.map(id, aux.get(id));
+		}
 	}
 
-
-	public void incluir(AmbienteCompilacao amb, AmbienteCompilacao aux, boolean incluirCuringa) throws VariavelJaDeclaradaException {
-		amb.map(getId(), aux.get(getId()));
+	public void incluir(AmbienteCompilacao amb, AmbienteCompilacao aux, boolean incluirCuringa)
+			throws VariavelJaDeclaradaException {
+		for (Id id : padrao.getIdsLigados()) {
+			amb.map(id, aux.get(id));
+		}
 	}
-
 
 	public void reduzir(AmbienteExecucao amb) {
-		amb.map(getId(), null);
+		for (Id id : padrao.getIdsLigados()) {
+			amb.map(id, null);
+		}
 	}
-	
+
 	public DecVariavel clone() {
-		return new DecVariavel(this.id.clone(), this.expressao.clone());
+		return new DecVariavel(this.padrao.clone(), this.expressao.clone());
 	}
 }
