@@ -10,10 +10,8 @@ import project.plp.expressions2.memory.AmbienteCompilacao;
 import project.plp.expressions2.memory.VariavelJaDeclaradaException;
 import project.plp.expressions2.memory.VariavelNaoDeclaradaException;
 import project.plp.functional1.util.TipoFuncao;
-import project.plp.functional1.util.TipoPolimorfico;
 import project.plp.functional2.expression.ValorFuncao;
 import project.plp.project.desestruturacao.Padrao;
-import project.plp.project.util.TipoTupla;
 import plp.debug.core.InfoEscopo;
 import plp.debug.core.ScopeAware;
 
@@ -63,17 +61,6 @@ public class ValorFuncaoDebug extends ValorFuncao {
 				} catch (VariavelNaoDeclaradaException ignored) {
 					// Parâmetro fora do ambiente: mantém o valor já registrado.
 				}
-			}
-		}
-	}
-
-	/** Mesma logica de DefFuncao.inferirTipos, reproduzida aqui por ser privada la. */
-	private static void inferirTipos(Tipo tipo) {
-		if (tipo instanceof TipoPolimorfico) {
-			((TipoPolimorfico) tipo).inferir();
-		} else if (tipo instanceof TipoTupla) {
-			for (Tipo componente : ((TipoTupla) tipo).getComponentes()) {
-				inferirTipos(componente);
 			}
 		}
 	}

@@ -67,6 +67,10 @@ public class TipoPolimorfico implements Tipo {
 		return this.tipoInstanciado;
 	}
 
+	public Tipo getTipoInferido() {
+		return this.tipoInferido;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 

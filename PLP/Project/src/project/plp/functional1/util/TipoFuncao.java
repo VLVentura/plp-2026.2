@@ -153,11 +153,16 @@ public class TipoFuncao implements Tipo {
 	/**
 	 * Desce por dentro de tuplas para limpar cada TipoPolimorfico folha, ja
 	 * que limpar() so afeta o proprio objeto, nao os componentes de uma
-	 * TipoTupla.
+	 * TipoTupla. Um TipoPolimorfico ja inferido como tupla nao e um curinga.
 	 */
 	private void limparTipoCuringa(Tipo tipo) {
 		if (tipo instanceof TipoPolimorfico) {
-			((TipoPolimorfico) tipo).limpar();
+			Tipo inferido = ((TipoPolimorfico) tipo).getTipoInferido();
+			if (inferido instanceof TipoTupla) {
+				limparTipoCuringa(inferido);
+			} else {
+				((TipoPolimorfico) tipo).limpar();
+			}
 		} else if (tipo instanceof TipoTupla) {
 			for (Tipo componente : ((TipoTupla) tipo).getComponentes()) {
 				limparTipoCuringa(componente);

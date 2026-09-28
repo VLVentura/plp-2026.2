@@ -59,9 +59,14 @@ public class DefFuncao {
 	 * dentro da estrutura da tupla esperada, ja que TipoPolimorfico.inferir()
 	 * so resolve a si mesmo, nao os componentes de uma TipoTupla.
 	 */
-	private static void inferirTipos(Tipo tipo) {
+	protected static void inferirTipos(Tipo tipo) {
 		if (tipo instanceof TipoPolimorfico) {
-			((TipoPolimorfico) tipo).inferir();
+			Tipo inferido = ((TipoPolimorfico) tipo).getTipoInferido();
+			if (inferido instanceof TipoTupla) {
+				inferirTipos(inferido);
+			} else {
+				((TipoPolimorfico) tipo).inferir();
+			}
 		} else if (tipo instanceof TipoTupla) {
 			for (Tipo componente : ((TipoTupla) tipo).getComponentes()) {
 				inferirTipos(componente);
