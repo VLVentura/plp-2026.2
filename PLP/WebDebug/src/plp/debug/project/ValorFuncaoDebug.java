@@ -68,6 +68,7 @@ public class ValorFuncaoDebug extends ValorFuncao {
 	@Override
 	public boolean checaTipo(AmbienteCompilacao ambiente)
 			throws VariavelNaoDeclaradaException, VariavelJaDeclaradaException {
+		checaDuplicidade();
 		ambiente.incrementa();
 		registra(ambiente);
 

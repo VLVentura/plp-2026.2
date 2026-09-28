@@ -43,7 +43,7 @@ public class DefFuncao {
 		return parametros.size();
 	}
 
-	private void checaDuplicidade() {
+	protected void checaDuplicidade() {
 		Set<Id> vistos = new HashSet<Id>();
 		for (Padrao parametro : parametros) {
 			for (Id id : parametro.getIdsLigados()) {
