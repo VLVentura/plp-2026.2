@@ -15,19 +15,19 @@
 ### Fase 3: Padrões em compreensões de lista
 - [x] 3.1 `[x + y for (x, y) in lista]`
 
-## Pendente
-
 ### Fase 4: Padrões em parâmetros de função
 - [x] 4.1 Função recebendo tupla desestruturada direto no parâmetro:
       `fun f (x, y) = x + y`, incluindo aninhado, `fn` anônima e captura de
       variáveis
-- [ ] 4.2 A mesma função polimórfica funcionando com tuplas de tipos
+- [x] 4.2 A mesma função polimórfica funcionando com tuplas de tipos
       diferentes em chamadas distintas
+
+## Pendente
 
 ### Fase 5: Aceitação final
 - [ ] 5.1 Rodar todos os casos de teste do README de ponta a ponta
 
 ## Notas rápidas
-- Rodar os testes: `cd PLP && mvn -f Project/pom.xml test` (55 ok até agora)
+- Rodar os testes: `cd PLP && mvn -f Project/pom.xml test` (71 ok até agora)
 - Tem uma segunda cópia da gramática pro WebDebug (IDE web) que precisa ser
   atualizada à mão sempre que mexemos no parser

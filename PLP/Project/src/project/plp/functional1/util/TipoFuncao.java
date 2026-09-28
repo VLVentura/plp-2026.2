@@ -10,6 +10,7 @@ package project.plp.functional1.util;
 
 import static project.plp.expressions1.util.ToStringProvider.listToString;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -18,6 +19,7 @@ import project.plp.expressions2.expression.Expressao;
 import project.plp.expressions2.memory.AmbienteCompilacao;
 import project.plp.expressions2.memory.VariavelJaDeclaradaException;
 import project.plp.expressions2.memory.VariavelNaoDeclaradaException;
+import project.plp.project.util.TipoTupla;
 
 /**
  * Esta classe representa o tipo de uma fun��o.
@@ -143,14 +145,46 @@ public class TipoFuncao implements Tipo {
 	 */
 	private void limparTiposCuringas() {
 		for (Tipo tDom : getDominio()) {
-			if (tDom instanceof TipoPolimorfico) {
-				((TipoPolimorfico) tDom).limpar();
-			}
+			limparTipoCuringa(tDom);
+		}
+		limparTipoCuringa(getImagem());
+	}
 
+	/**
+	 * Desce por dentro de tuplas para limpar cada TipoPolimorfico folha, ja
+	 * que limpar() so afeta o proprio objeto, nao os componentes de uma
+	 * TipoTupla.
+	 */
+	private void limparTipoCuringa(Tipo tipo) {
+		if (tipo instanceof TipoPolimorfico) {
+			((TipoPolimorfico) tipo).limpar();
+		} else if (tipo instanceof TipoTupla) {
+			for (Tipo componente : ((TipoTupla) tipo).getComponentes()) {
+				limparTipoCuringa(componente);
+			}
 		}
-		if (getImagem() instanceof TipoPolimorfico) {
-			((TipoPolimorfico) getImagem()).limpar();
+	}
+
+	/**
+	 * Copia um tipo substituindo cada TipoPolimorfico folha pelo tipo
+	 * instanciado nesta chamada, para que o resultado sobreviva a
+	 * limparTiposCuringas() feita logo em seguida.
+	 */
+	private Tipo materializar(Tipo tipo) {
+		if (tipo instanceof TipoPolimorfico) {
+			Tipo instanciado = ((TipoPolimorfico) tipo).getTipoInstanciado();
+			return instanciado == null ? tipo : materializar(instanciado);
 		}
+
+		if (tipo instanceof TipoTupla) {
+			List<Tipo> componentes = new ArrayList<Tipo>();
+			for (Tipo componente : ((TipoTupla) tipo).getComponentes()) {
+				componentes.add(materializar(componente));
+			}
+			return new TipoTupla(componentes);
+		}
+
+		return tipo;
 	}
 
 	private boolean checkArgumentListSize(
@@ -195,15 +229,10 @@ public class TipoFuncao implements Tipo {
 			tipoArg.eIgual(it.next());
 		}
 
-		// Obtem o resultado. 
-		Tipo ret = getImagem();
-		// Caso seja um tipo polimorfico procura a mais espec�fica instancia��o.
-		while (ret instanceof TipoPolimorfico) {
-			if (((TipoPolimorfico) ret).getTipoInstanciado() == null) {
-				break;
-			}
-			ret = ((TipoPolimorfico) ret).getTipoInstanciado();
-		}
+		// Obtem o resultado, ja materializado com a instancia��o desta
+		// chamada, pois limparTiposCuringas() vai apagar essa informa��o dos
+		// objetos originais logo em seguida.
+		Tipo ret = materializar(getImagem());
 
 		limparTiposCuringas();
 		return ret;
