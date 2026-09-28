@@ -151,8 +151,6 @@ public class Gerador {
 		try {
 			this.padrao.bindTipo(lista.getSubTipo(), amb);
 			return this.proximo == null || this.proximo.checaTipo(amb);
-		} catch (DesestruturacaoException e) {
-			return false;
 		} finally {
 			amb.restaura();
 		}

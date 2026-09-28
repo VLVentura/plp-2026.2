@@ -1,5 +1,6 @@
 package project.plp.project.desestruturacao;
 
+import project.plp.expressions1.util.Tipo;
 import project.plp.expressions2.expression.Id;
 
 /**
@@ -35,6 +36,18 @@ public class DesestruturacaoException extends RuntimeException {
 	public static DesestruturacaoException estrutura(Padrao padrao, Object recebido) {
 		return new DesestruturacaoException(Motivo.ESTRUTURA,
 				String.format("padrao %s espera uma tupla, mas recebeu %s", padrao, recebido));
+	}
+
+	public static DesestruturacaoException aridadeArgumento(Tipo esperado, Object recebido, int aridadeEsperada,
+			int aridadeRecebida) {
+		return new DesestruturacaoException(Motivo.ARIDADE, String.format(
+				"parametro do tipo %s espera %d posicoes, mas %s tem %d", esperado, aridadeEsperada, recebido,
+				aridadeRecebida));
+	}
+
+	public static DesestruturacaoException estruturaArgumento(Tipo esperado, Object recebido) {
+		return new DesestruturacaoException(Motivo.ESTRUTURA,
+				String.format("parametro do tipo %s espera uma tupla, mas recebeu %s", esperado, recebido));
 	}
 
 	public static DesestruturacaoException duplicidade(Id id) {

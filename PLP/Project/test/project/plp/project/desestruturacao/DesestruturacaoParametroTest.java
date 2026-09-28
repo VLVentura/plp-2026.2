@@ -26,8 +26,29 @@ public class DesestruturacaoParametroTest {
 	}
 
 	@Test
-	void aridadeIncompativelEhErroEstrutural() throws Exception {
-		assertFalse(tipaCorretamente("let fun f (x, y) = x + y in f(3)"));
+	void argumentoQueNaoETupla() throws Exception {
+		DesestruturacaoException erro = assertThrows(DesestruturacaoException.class,
+				() -> tipaCorretamente("let fun f (x, y) = x + y in f(3)"));
+		assertEquals(DesestruturacaoException.Motivo.ESTRUTURA, erro.getMotivo());
+	}
+
+	@Test
+	void tuplaDeOutroTamanho() throws Exception {
+		DesestruturacaoException erro = assertThrows(DesestruturacaoException.class,
+				() -> tipaCorretamente("let fun f (x, (y, z)) = x in f((1, (2, 3, 4)))"));
+		assertEquals(DesestruturacaoException.Motivo.ARIDADE, erro.getMotivo());
+	}
+
+	@Test
+	void parametroDesestruturadoNoCorpo() throws Exception {
+		DesestruturacaoException erro = assertThrows(DesestruturacaoException.class,
+				() -> tipaCorretamente("let fun f p = let var (a, b) = p in a in f(3)"));
+		assertEquals(DesestruturacaoException.Motivo.ESTRUTURA, erro.getMotivo());
+	}
+
+	@Test
+	void argumentoAindaPolimorfico() throws Exception {
+		assertEquals("3", resultado("let fun g p = let fun f (x, y) = x + y in f(p) in g((1, 2))"));
 	}
 
 	@Test

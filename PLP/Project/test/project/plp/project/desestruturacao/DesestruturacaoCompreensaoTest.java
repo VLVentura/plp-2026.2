@@ -37,7 +37,15 @@ public class DesestruturacaoCompreensaoTest {
 
 	@Test
 	void estruturaIncompativelFalhaNaChecagem() throws Exception {
-		assertFalse(tipaCorretamente("[x for (x, y) in [1, 2]]"));
-		assertFalse(tipaCorretamente("[x for (x, y) in [(1, 2, 3)]]"));
+		DesestruturacaoException erro = assertThrows(DesestruturacaoException.class,
+				() -> tipaCorretamente("[x for (x, y) in [1, 2]]"));
+		assertEquals(DesestruturacaoException.Motivo.ESTRUTURA, erro.getMotivo());
+	}
+
+	@Test
+	void aridadeIncompativelFalhaNaChecagem() throws Exception {
+		DesestruturacaoException erro = assertThrows(DesestruturacaoException.class,
+				() -> tipaCorretamente("[x for (x, y) in [(1, 2, 3)]]"));
+		assertEquals(DesestruturacaoException.Motivo.ARIDADE, erro.getMotivo());
 	}
 }

@@ -38,7 +38,6 @@ public class DesestruturacaoPolimorfismoTest {
 		String fst = "let fun fst p = let var (a, b) = p in a in ";
 		assertFalse(tipaCorretamente(fst + "fst((1, true)) + fst((\"s\", 2))"));
 		assertTrue(tipaCorretamente(fst + "(fst((1, true)), not fst((false, 2)))"));
-		assertFalse(tipaCorretamente(fst + "fst(3)"));
 	}
 
 	@Test

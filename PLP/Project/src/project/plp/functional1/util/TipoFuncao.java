@@ -19,6 +19,7 @@ import project.plp.expressions2.expression.Expressao;
 import project.plp.expressions2.memory.AmbienteCompilacao;
 import project.plp.expressions2.memory.VariavelJaDeclaradaException;
 import project.plp.expressions2.memory.VariavelNaoDeclaradaException;
+import project.plp.project.desestruturacao.DesestruturacaoException;
 import project.plp.project.util.TipoTupla;
 
 /**
@@ -211,9 +212,59 @@ public class TipoFuncao implements Tipo {
 			tipoArg = valorReal.getTipo(ambiente);
 			Tipo tipoDom = it.next();
 
+			checaEstruturaTupla(tipoDom, tipoArg);
 			result &= tipoArg.eIgual(tipoDom);
 		}
 		return result;
+	}
+
+	/**
+	 * Quando o parametro espera uma tupla, reporta um argumento que nao e
+	 * tupla, ou que tem outra aridade, como erro de desestruturacao, em vez
+	 * de deixar eIgual apenas devolver false sem dizer o motivo.
+	 */
+	private static void checaEstruturaTupla(Tipo esperado, Tipo recebido) {
+		esperado = seguirTipoPolimorfico(esperado);
+		if (!(esperado instanceof TipoTupla)) {
+			return;
+		}
+
+		recebido = seguirTipoPolimorfico(recebido);
+		if (recebido instanceof TipoPolimorfico) {
+			// Ainda livre: a unificacao decide.
+			return;
+		}
+		if (!(recebido instanceof TipoTupla)) {
+			throw DesestruturacaoException.estruturaArgumento(esperado, recebido);
+		}
+
+		List<Tipo> componentesEsperados = ((TipoTupla) esperado).getComponentes();
+		List<Tipo> componentesRecebidos = ((TipoTupla) recebido).getComponentes();
+		if (componentesEsperados.size() != componentesRecebidos.size()) {
+			throw DesestruturacaoException.aridadeArgumento(esperado, recebido,
+					componentesEsperados.size(), componentesRecebidos.size());
+		}
+
+		for (int i = 0; i < componentesEsperados.size(); i++) {
+			checaEstruturaTupla(componentesEsperados.get(i), componentesRecebidos.get(i));
+		}
+	}
+
+	/**
+	 * Segue um TipoPolimorfico ate o tipo que ele representa, pela instancia
+	 * desta chamada ou pela inferencia, parando em uma variavel ainda livre.
+	 */
+	private static Tipo seguirTipoPolimorfico(Tipo tipo) {
+		while (tipo instanceof TipoPolimorfico) {
+			TipoPolimorfico polimorfico = (TipoPolimorfico) tipo;
+			Tipo proximo = polimorfico.getTipoInstanciado() != null ? polimorfico.getTipoInstanciado()
+					: polimorfico.getTipoInferido();
+			if (proximo == null || proximo == TipoPolimorfico.CURINGA) {
+				break;
+			}
+			tipo = proximo;
+		}
+		return tipo;
 	}
 
 	public boolean checaTipo(AmbienteCompilacao ambiente,
