@@ -18,8 +18,9 @@
 ## Pendente
 
 ### Fase 4: Padrões em parâmetros de função
-- [ ] 4.1 Função recebendo tupla desestruturada direto no parâmetro:
-      `fun f (x, y) = x + y`
+- [x] 4.1 Função recebendo tupla desestruturada direto no parâmetro:
+      `fun f (x, y) = x + y`, incluindo aninhado, `fn` anônima e captura de
+      variáveis
 - [ ] 4.2 A mesma função polimórfica funcionando com tuplas de tipos
       diferentes em chamadas distintas
 

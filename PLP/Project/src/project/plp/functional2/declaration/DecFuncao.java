@@ -43,7 +43,7 @@ public class DecFuncao implements DeclaracaoFuncional {
 	@Override
 	public String toString() {
 		return String.format("fun %s (%s) = %s", id, listToString(valorFuncao
-				.getListaId(), ","), getExpressao());
+				.getParametros(), ","), getExpressao());
 	}
 
 	public Id getId() {

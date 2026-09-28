@@ -377,7 +377,7 @@ Valor PValorFuncao() :
   Expressao expressao;
 }
 {
-  < FN > lista = PListaId() < DOT > expressao = PExpressao()
+  < FN > lista = PListaPadrao() < DOT > expressao = PExpressao()
   {
     return new ValorFuncao(lista, expressao);
   }
@@ -529,23 +529,23 @@ Expressao PAplicacao() :
   }
 }
 
-List PListaId() :
+List PListaPadrao() :
 {
   List retorno = null;
-  Id id;
+  Padrao padrao;
 }
 {
   (
-    id = PId()
+    padrao = PPadrao()
     {
       if (retorno == null)
       {
         retorno = new ArrayList();
-        retorno.add(id);
+        retorno.add(padrao);
       }
       else
       {
-        retorno.add(id);
+        retorno.add(padrao);
       }
     }
   )*
@@ -616,7 +616,7 @@ DeclaracaoFuncional PDeclFuncao() :
 }
 {
   (
-    < FUNC > id = PId() lista = PListaId() < ASSIGN > expressao = PExpressao()
+    < FUNC > id = PId() lista = PListaPadrao() < ASSIGN > expressao = PExpressao()
   )
   {
     return new DecFuncao(id, new ValorFuncao(lista, expressao));

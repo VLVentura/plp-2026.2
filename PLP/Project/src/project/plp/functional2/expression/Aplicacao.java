@@ -4,10 +4,8 @@ import static java.util.Arrays.asList;
 import static project.plp.expressions1.util.ToStringProvider.listToString;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import project.plp.expressions1.util.Tipo;
 import project.plp.expressions2.expression.Expressao;
@@ -17,9 +15,9 @@ import project.plp.expressions2.memory.AmbienteCompilacao;
 import project.plp.expressions2.memory.AmbienteExecucao;
 import project.plp.expressions2.memory.VariavelJaDeclaradaException;
 import project.plp.expressions2.memory.VariavelNaoDeclaradaException;
-import project.plp.functional1.util.DefFuncao;
 import project.plp.functional1.util.TipoFuncao;
 import project.plp.functional1.util.TipoPolimorfico;
+import project.plp.project.desestruturacao.Padrao;
 
 public class Aplicacao implements Expressao {
 
@@ -40,9 +38,9 @@ public class Aplicacao implements Expressao {
 
 		ValorFuncao funcao = (ValorFuncao) func.avaliar(ambiente);
 
-		Map<Id, Valor> mapIdValor = resolveParametersBindings(ambiente, funcao);
-		ambiente.incrementa();		
-		includeValueBindings(ambiente, mapIdValor);
+		List<Valor> valoresReais = avaliaArgumentos(ambiente);
+		ambiente.incrementa();
+		bindParametros(ambiente, funcao, valoresReais);
 
 		if(funcao.getId() != null){
 			ambiente.map(funcao.getId(), funcao.clone());
@@ -142,32 +140,21 @@ public class Aplicacao implements Expressao {
 		return tipoFuncao.getTipo(ambiente, argsExpressao);
 	}
 
-	private void includeValueBindings(AmbienteExecucao ambiente,
-			Map<Id, Valor> mapIdValor) throws VariavelJaDeclaradaException {
-		for (Map.Entry<Id, Valor> mapeamento : mapIdValor.entrySet()) {
-			Id id = mapeamento.getKey();
-			Valor valor = mapeamento.getValue();
-			ambiente.map(id, valor);
+	private List<Valor> avaliaArgumentos(AmbienteExecucao ambiente)
+			throws VariavelNaoDeclaradaException, VariavelJaDeclaradaException {
+		List<Valor> valores = new ArrayList<Valor>(argsExpressao.size());
+		for (Expressao exp : argsExpressao) {
+			valores.add(exp.avaliar(ambiente));
 		}
+		return valores;
 	}
 
-	private Map<Id, Valor> resolveParametersBindings(AmbienteExecucao ambiente,
-			DefFuncao funcao) throws VariavelNaoDeclaradaException,
-			VariavelJaDeclaradaException {
-		List<Id> parametrosId = funcao.getListaId();
-		List<? extends Expressao> expressoesValorReal = argsExpressao;
-
-		Map<Id, Valor> mapIdValor = new HashMap<Id, Valor>();
-
-		Iterator<? extends Expressao> iterExpressoesValor = expressoesValorReal
-				.iterator();
-		for (Id id : parametrosId) {
-			Expressao exp = iterExpressoesValor.next();
-			Valor valorReal = exp.avaliar(ambiente);
-			mapIdValor.put(id, valorReal);
+	private void bindParametros(AmbienteExecucao ambiente, ValorFuncao funcao,
+			List<Valor> valoresReais) throws VariavelJaDeclaradaException {
+		Iterator<Valor> iterValores = valoresReais.iterator();
+		for (Padrao parametro : funcao.getParametros()) {
+			parametro.bind(iterValores.next(), ambiente);
 		}
-
-		return mapIdValor;
 	}
 
 	/**

@@ -12,6 +12,8 @@ import project.plp.expressions2.memory.VariavelNaoDeclaradaException;
 import project.plp.functional1.util.TipoFuncao;
 import project.plp.functional1.util.TipoPolimorfico;
 import project.plp.functional2.expression.ValorFuncao;
+import project.plp.project.desestruturacao.Padrao;
+import project.plp.project.util.TipoTupla;
 import plp.debug.core.InfoEscopo;
 import plp.debug.core.ScopeAware;
 
@@ -28,8 +30,8 @@ public class ValorFuncaoDebug extends ValorFuncao {
 
 	private final InfoEscopo infoEscopo;
 
-	public ValorFuncaoDebug(List<Id> argsId, Expressao exp, InfoEscopo infoEscopo) {
-		super(argsId, exp);
+	public ValorFuncaoDebug(List<Padrao> parametros, Expressao exp, InfoEscopo infoEscopo) {
+		super(parametros, exp);
 		this.infoEscopo = infoEscopo;
 	}
 
@@ -51,14 +53,27 @@ public class ValorFuncaoDebug extends ValorFuncao {
 		if (!(ambiente instanceof ScopeAware)) {
 			return;
 		}
-		for (Id id : argsId) {
-			try {
-				Tipo tipo = ambiente.get(id);
-				if (tipo != null) {
-					((ScopeAware) ambiente).registraBinding(id, tipo, tipo.getNome());
+		for (Padrao parametro : parametros) {
+			for (Id id : parametro.getIdsLigados()) {
+				try {
+					Tipo tipo = ambiente.get(id);
+					if (tipo != null) {
+						((ScopeAware) ambiente).registraBinding(id, tipo, tipo.getNome());
+					}
+				} catch (VariavelNaoDeclaradaException ignored) {
+					// Parâmetro fora do ambiente: mantém o valor já registrado.
 				}
-			} catch (VariavelNaoDeclaradaException ignored) {
-				// Parâmetro fora do ambiente: mantém o valor já registrado.
+			}
+		}
+	}
+
+	/** Mesma logica de DefFuncao.inferirTipos, reproduzida aqui por ser privada la. */
+	private static void inferirTipos(Tipo tipo) {
+		if (tipo instanceof TipoPolimorfico) {
+			((TipoPolimorfico) tipo).inferir();
+		} else if (tipo instanceof TipoTupla) {
+			for (Tipo componente : ((TipoTupla) tipo).getComponentes()) {
+				inferirTipos(componente);
 			}
 		}
 	}
@@ -69,8 +84,8 @@ public class ValorFuncaoDebug extends ValorFuncao {
 		ambiente.incrementa();
 		registra(ambiente);
 
-		for (Id id : argsId) {
-			ambiente.map(id, new TipoPolimorfico());
+		for (Padrao parametro : parametros) {
+			parametro.novoTipoEsperado(ambiente);
 		}
 
 		boolean result = exp.checaTipo(ambiente);
@@ -87,19 +102,17 @@ public class ValorFuncaoDebug extends ValorFuncao {
 		ambiente.incrementa();
 		registra(ambiente);
 
-		for (Id id : argsId) {
-			ambiente.map(id, new TipoPolimorfico());
+		List<Tipo> params = new ArrayList<Tipo>(getAridade());
+		for (Padrao parametro : parametros) {
+			params.add(parametro.novoTipoEsperado(ambiente));
 		}
 
 		exp.checaTipo(ambiente);
 
 		Tipo result = exp.getTipo(ambiente);
 
-		List<Tipo> params = new ArrayList<Tipo>(getAridade());
-		Tipo argTipo;
-		for (int i = 0; i < getAridade(); i++) {
-			argTipo = ((TipoPolimorfico) ambiente.get(argsId.get(i))).inferir();
-			params.add(argTipo);
+		for (Tipo param : params) {
+			inferirTipos(param);
 		}
 		result = new TipoFuncao(params, result);
 
@@ -111,9 +124,9 @@ public class ValorFuncaoDebug extends ValorFuncao {
 
 	@Override
 	public ValorFuncaoDebug clone() {
-		List<Id> novaLista = new ArrayList<Id>(this.argsId.size());
-		for (Id id : this.argsId) {
-			novaLista.add(id.clone());
+		List<Padrao> novaLista = new ArrayList<Padrao>(this.parametros.size());
+		for (Padrao parametro : this.parametros) {
+			novaLista.add(parametro.clone());
 		}
 		return new ValorFuncaoDebug(novaLista, this.exp.clone(), infoEscopo);
 	}
