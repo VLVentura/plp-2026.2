@@ -31,6 +31,7 @@ import java.util.List;
 import project.plp.functional3.*;
 import project.plp.functional3.expression.*;
 import project.plp.project.expression.ExpTupla;
+import project.plp.project.expression.ExpProjecao;
 import project.plp.project.expression.ValorTupla;
 import project.plp.functional3.declaration.DecComposta;
 import project.plp.project.desestruturacao.*;
@@ -506,6 +507,7 @@ Expressao PExpPrimaria() :
   Expressao retorno;
   Expressao componente;
   List componentes = null;
+  Token indice;
 }
 {
   (
@@ -534,6 +536,12 @@ Expressao PExpPrimaria() :
       }
     }
   )
+  (
+    < DOT > indice = < INTEGER_LITERAL >
+    {
+      retorno = new ExpProjecao(retorno, Integer.parseInt(indice.image));
+    }
+  )*
   {
     return retorno;
   }

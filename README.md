@@ -34,7 +34,7 @@ ExpTupla ::= "(" Expressao "," ListaExpressao ")"
 
 Mesmo sendo só o pré-requisito, essa parte já passa por várias camadas do interpretador. `ExpTupla` e `ValorTupla` precisam implementar todo o contrato de `Expressao` (`avaliar`, `checaTipo`, `getTipo`, `reduzir` e `clone`), e `ValorTupla.clone` precisa ser profundo, porque `Id.reduzir` insere cópias de valores dentro da árvore sintática. `TipoTupla` precisa responder corretamente a `eIgual`, `intersecao`, `eValido` e `getNome`, inclusive quando os componentes são `TipoPolimorfico` ainda não resolvidos. É isso que faz `[(1, 2), (3, 4)]` ser uma lista válida do tipo `[(int, int)]`, faz `[(1, 2), (3, "a")]` ser rejeitada e permite que um `if` com uma tupla em cada ramo tenha um tipo bem definido. O `main` do parser também precisa saber exibir um `ValorTupla` como resultado.
 
-Nada além disso entra no escopo: não há acesso por índice, comparação de tuplas nem conversão entre tupla e lista (ver a seção 5.F).
+Nada além disso entra no escopo: não há comparação de tuplas nem conversão entre tupla e lista (ver a seção 5.F). O acesso a uma posição da tupla existe apenas com índice estático, na forma `e.k` (ver a seção 5.G).
 
 ---
 
@@ -155,6 +155,7 @@ O projeto altera o analisador léxico e sintático, a elaboração de declaraç�
               | Aplicacao
               | IfThenElse
               | ExpTupla
+              | ExpProjecao
 
   Valor ::= ValorConcreto
           | ValorAbstrato
@@ -169,6 +170,8 @@ O projeto altera o analisador léxico e sintático, a elaboração de declaraç�
   ValorFuncao ::= "fn" ListaPadrao "." Expressao
 
   ExpTupla ::= "(" Expressao "," ListaExpressao ")"
+
+  ExpProjecao ::= ExpPrimaria "." Inteiro
 
   ExpUnaria ::= "-" Expressao
               | "not" Expressao
@@ -237,7 +240,7 @@ O projeto altera o analisador léxico e sintático, a elaboração de declaraç�
 
   | Produção              | Antes                            | Depois                               |
   | :-------------------- | :------------------------------- | :----------------------------------- |
-  | `Expressao`           | sem tuplas                       | ganha `ExpTupla`                     |
+  | `Expressao`           | sem tuplas                       | ganha `ExpTupla` e `ExpProjecao`     |
   | `DecVariavel`         | `"var" Id "=" Expressao`         | `"var" Padrao "=" Expressao`         |
   | `DecFuncao`           | `"fun" Id ListaId "=" Expressao` | `"fun" Id ListaPadrao "=" Expressao` |
   | `ValorFuncao`         | `"fn" ListaId "." Expressao`     | `"fn" ListaPadrao "." Expressao`     |
@@ -381,10 +384,29 @@ Ficam explicitamente fora do escopo:
 - rest/spread, como `(x, ...resto)`;
 - tuplas nomeadas;
 - tuplas mutáveis;
-- acesso a tupla por índice;
+- acesso a tupla por índice dinâmico (o índice estático `e.k` da seção 5.G é suportado);
 - ordenação ou comparação geral de tuplas;
 - conversão automática entre lista e tupla;
 - guards em padrões.
+
+### G. Projeção de Tuplas (`e.k`)
+
+Além de desestruturar, é possível ler uma única posição de uma tupla com um índice **estático**, escrito como literal depois de um ponto. A primeira posição é `.1`:
+
+```
+(10, 20).1                                   // 10
+let var p = ("Ana", (20, true)) in p.2.2     // true
+divide(17, 5).1                              // 3
+```
+
+- **Sintaxe.** A projeção é um sufixo da expressão primária e pode ser encadeada (`p.2.1`). Ela liga mais forte que qualquer operador: `1 + p.2`, `not p.1` e `f(x).1` projetam antes de operar. Não há conflito com `fn padroes . corpo`, porque o ponto do `fn` vem depois de padrões e nunca depois de uma expressão, nem com `..`, que o analisador léxico reconhece como um token único.
+- **Tipos.** Como `k` é literal, a checagem sabe exatamente qual componente é devolvido: `("Ana", 20).1` tem tipo `string`. Para isso ela precisa conhecer a aridade da tupla, então o tipo da expressão projetada é seguido através das variáveis de tipo até um tipo concreto.
+- **Tipo ainda livre.** Em `fun f p = p.1`, o tipo de `p` é uma variável livre e nada diz quantas posições a tupla tem. Criar uma tupla de aridade arbitrária seria errado, e aceitar "qualquer tupla com pelo menos uma posição" exigiria tipos de tupla abertos (row types), que a LF3 não tem. A projeção é rejeitada nesse caso, como no *flex record* não resolvido do SML, e o caminho é a desestruturação, que conhece a aridade pelo padrão. Depois de `let var (a, b) = p in ...`, `p.1` passa a ser aceito no corpo.
+- **Execução.** A projeção avalia a expressão uma vez e devolve o componente. As verificações de estrutura e de índice são repetidas na execução, pelo mesmo motivo da seção 5.B.
+- **Erros** (`ProjecaoException`), detectados na checagem de tipos:
+  - **índice**: `(1, 2).3` ou `(1, 2).0`, posição fora da tupla;
+  - **estrutura**: `5.1` ou `[1, 2].1`, a expressão projetada não é uma tupla;
+  - **tipo livre**: `fun f p = p.1`, o tipo da tupla ainda não é conhecido.
 
 ---
 
@@ -414,8 +436,12 @@ O projeto será aceito se a mesma abstração de padrão funcionar de forma cons
 | `[x for (x, y) in [1, 2, 3]]`                         | Erro estrutural                                         |
 | `[(1, 2), (3, "a")]`                                  | Erro de tipo: elementos de tipos diferentes na lista    |
 | `let var x = _ in x`                                  | Erro de sintaxe                                         |
+| `let var p = ("Ana", (20, true)) in (p.1, p.2.2)`     | Válido, resulta em `("Ana", true)`                      |
+| `(1, 2).3`                                            | Erro de índice na projeção                              |
+| `5.1`                                                 | Erro estrutural na projeção                             |
+| `let fun f p = p.1 in f((1, 2))`                      | Erro: tipo da tupla ainda não conhecido                 |
 
-Com exceção do erro de sintaxe, todos os erros da tabela devem ser detectados na checagem de tipos, antes de qualquer avaliação, com mensagens que deixem claro o tipo do problema (aridade, estrutura ou duplicidade).
+Com exceção do erro de sintaxe, todos os erros da tabela devem ser detectados na checagem de tipos, antes de qualquer avaliação, com mensagens que deixem claro o tipo do problema (aridade, estrutura ou duplicidade; na projeção, índice, estrutura ou tipo livre).
 
 ### 6.2. Teste de Captura de Variáveis
 

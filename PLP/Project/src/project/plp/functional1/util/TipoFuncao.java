@@ -224,12 +224,12 @@ public class TipoFuncao implements Tipo {
 	 * de deixar eIgual apenas devolver false sem dizer o motivo.
 	 */
 	private static void checaEstruturaTupla(Tipo esperado, Tipo recebido) {
-		esperado = seguirTipoPolimorfico(esperado);
+		esperado = TipoPolimorfico.seguir(esperado);
 		if (!(esperado instanceof TipoTupla)) {
 			return;
 		}
 
-		recebido = seguirTipoPolimorfico(recebido);
+		recebido = TipoPolimorfico.seguir(recebido);
 		if (recebido instanceof TipoPolimorfico) {
 			// Ainda livre: a unificacao decide.
 			return;
@@ -248,23 +248,6 @@ public class TipoFuncao implements Tipo {
 		for (int i = 0; i < componentesEsperados.size(); i++) {
 			checaEstruturaTupla(componentesEsperados.get(i), componentesRecebidos.get(i));
 		}
-	}
-
-	/**
-	 * Segue um TipoPolimorfico ate o tipo que ele representa, pela instancia
-	 * desta chamada ou pela inferencia, parando em uma variavel ainda livre.
-	 */
-	private static Tipo seguirTipoPolimorfico(Tipo tipo) {
-		while (tipo instanceof TipoPolimorfico) {
-			TipoPolimorfico polimorfico = (TipoPolimorfico) tipo;
-			Tipo proximo = polimorfico.getTipoInstanciado() != null ? polimorfico.getTipoInstanciado()
-					: polimorfico.getTipoInferido();
-			if (proximo == null || proximo == TipoPolimorfico.CURINGA) {
-				break;
-			}
-			tipo = proximo;
-		}
-		return tipo;
 	}
 
 	public boolean checaTipo(AmbienteCompilacao ambiente,

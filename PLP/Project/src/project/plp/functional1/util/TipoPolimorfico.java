@@ -71,6 +71,23 @@ public class TipoPolimorfico implements Tipo {
 		return this.tipoInferido;
 	}
 
+	/**
+	 * Segue um TipoPolimorfico ate o tipo que ele representa, pela instancia
+	 * desta chamada ou pela inferencia, parando em uma variavel ainda livre.
+	 */
+	public static Tipo seguir(Tipo tipo) {
+		while (tipo instanceof TipoPolimorfico) {
+			TipoPolimorfico polimorfico = (TipoPolimorfico) tipo;
+			Tipo proximo = polimorfico.getTipoInstanciado() != null ? polimorfico.getTipoInstanciado()
+					: polimorfico.getTipoInferido();
+			if (proximo == null || proximo == CURINGA) {
+				break;
+			}
+			tipo = proximo;
+		}
+		return tipo;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
