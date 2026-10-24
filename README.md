@@ -171,7 +171,7 @@ O projeto altera o analisador léxico e sintático, a elaboração de declaraç�
 
   ExpTupla ::= "(" Expressao "," ListaExpressao ")"
 
-  ExpProjecao ::= ExpPrimaria "." Inteiro
+  ExpProjecao ::= Expressao "." ValorInteiro
 
   ExpUnaria ::= "-" Expressao
               | "not" Expressao
