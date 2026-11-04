@@ -1,0 +1,13 @@
+title: "LF3 + Desestruturação de Tuplas"
+description: "BNF da Linguagem Funcional 3 estendida com desestruturação de tuplas"
+baseurl: "/plp-2026.2"
+url: "https://vlventura.github.io"
+
+theme: minima
+
+# Base dos links da BNF: cada não terminal aponta para a classe que o implementa.
+code_base_url: "https://raw.githubusercontent.com/VLVentura/plp-2026.2/refs/heads/main/PLP/Project/src/project/plp/"
+
+# Mantém as aspas retas dos terminais da BNF ("fn", "(", ...).
+kramdown:
+  smart_quotes: ["apos", "apos", "quot", "quot"]

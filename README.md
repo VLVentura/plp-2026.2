@@ -166,6 +166,7 @@ O projeto altera o analisador léxico e sintático, a elaboração de declaraç�
                   | ValorBooleano
                   | ValorString
                   | ValorLista
+                  | ValorTupla
 
   ValorFuncao ::= "fn" ListaPadrao "." Expressao
 

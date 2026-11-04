@@ -1,0 +1,4 @@
+{%- assign filename = include.path | split: "/" | last | split: "." | first -%}
+<a href="{{ site.code_base_url }}{{ include.path }}" target="_blank" rel="noopener noreferrer">
+    {{ include.content | default: filename }}
+</a>
